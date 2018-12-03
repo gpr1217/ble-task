@@ -1,5 +1,6 @@
 package apps.gpr.bletask;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -23,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -54,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
                                         android.R.id.text1,devicesList);
         ble_devices_list.setAdapter(adapter);
 
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)){
+       /* if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)){
             Toast.makeText(this,"BLE not supported",Toast.LENGTH_LONG).show();
             finish();
-        }
+        }*/
 
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         btAdapter = bluetoothManager.getAdapter();
@@ -104,7 +106,9 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         try {
             devicesList.clear();
-            bleStartScan();
+            if (!isScanning) {
+                bleStartScan();
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -121,14 +125,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_CANCELED){
+            finish();
+            return;
+        }else if (requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK){
+            bleStartScan();
+            //Toast.makeText(getApplicationContext(),"User chose to enable bluetooth",Toast.LENGTH_LONG).show();
+        }
+
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     public void bleStartScan(){
         try {
+            Log.d("bleStartScan","startScan");
             if (btAdapter == null || btScanner == null)
                 return;
 
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d("bleStartScan","stopScan");
                     isScanning = false;
                     btScanner.stopScan(leScanCallback);
                 }
@@ -148,7 +167,9 @@ public class MainActivity extends AppCompatActivity {
             super.onScanResult(callbackType, result);
             String dName = result.getDevice().getName();
             String dAddress = result.getDevice().getAddress();
+
             if (dAddress != null && dName != null) {
+                Log.d("bleStartScan dAddress",dAddress);
                 if (devicesList.contains(dName + "-" + dAddress)){
                     Log.d("leScanCallback","Contains");
                 }else {

@@ -6,6 +6,7 @@ public class SampleGattAttributes {
 
     public static UUID SERVICE_UUID = covertFromInteger(0x2A02);
     public static UUID CHARACTERISTICS_UUID = covertFromInteger(0x2A03);
+    public static UUID CHARACTERISTICS_CONFIG_UUID = covertFromInteger(0x2902);
 
     private static UUID covertFromInteger(int i){
 

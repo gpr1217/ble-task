@@ -56,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
                                         android.R.id.text1,devicesList);
         ble_devices_list.setAdapter(adapter);
 
-       /* if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)){
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)){
             Toast.makeText(this,"BLE not supported",Toast.LENGTH_LONG).show();
             finish();
-        }*/
+        }
 
         BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         btAdapter = bluetoothManager.getAdapter();
